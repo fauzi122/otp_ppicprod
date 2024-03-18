@@ -73,13 +73,13 @@
                                                         
                                                         </button></td>
                                                 <td></td>
-                                                <td><form action="/hapus_pr/" method="post"
+                                                <td><form action="/hapus_grn/{{ $data->id }}" method="post"
                                                         class="d-inline">
                                                         @method('delete')
                                                         @csrf
                                                        
                                                         <button type="submit" class="btn btn-sm btn-danger"
-                                                        onclick="return confirm('Anda yakin mau menghapus item ini ?')">
+                                                        onclick="return confirm('Anda yakin mau menghapus item ini ?! {{ $data->id }}')">
                                                             <i class="bx bx-trash-alt" title="Hapus data" ></i>
                                                         </button>
                                                     </form>
