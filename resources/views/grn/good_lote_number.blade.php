@@ -73,9 +73,8 @@
                                                 </td>
                                                 <td>
                                                  @if($data->lot_number!='')   
-                                                <button type="submit" class="btn btn-sm btn-info" >
-                                                    <i class="bx bx-barcode" > Print Barcode</i>
-                                                </button>
+                                               
+                                                <a href="/generateBarcode/{{ $data->lot_number }}" class="btn btn-sm btn-info"><i class=" bx bx-barcode" >Print Barcode</i></a>
                                                 @else
                                                 <button type="submit" class="btn btn-sm btn-danger" >
                                                     <i class="bx bx-info-circle" > Please Generate Barcode</i>
@@ -83,17 +82,10 @@
                                                 @endif
                                                 </td>
                                                     @include('grn.modal')
-                                                <td><form action="/hapus_grn/" method="post"
-                                                        class="d-inline">
-                                                        @method('delete')
-                                                        @csrf
-                                                       
-                                                        <button type="submit" class="btn btn-sm btn-primary" >
-                                                            <i class=" bx bx-show-alt" ></i>
-                                                        </button>
-                                                    </form>
+                                                <td>
+                                                    <a href="/good-lote-number-detail/{{ $data->id }}" class="btn btn-sm btn-primary waves-effect waves-light"><i class=" bx bx-show-alt" ></i></a>
                                                    
-                                                    </td>
+                                                </td>
                                              
                                             </tr>
                                    @endforeach
