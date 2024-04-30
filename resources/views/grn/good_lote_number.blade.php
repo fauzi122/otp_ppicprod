@@ -50,7 +50,7 @@
                                             <th>Lot Number</th>
                                             <th>Note</th>
                                             <th>Generate Lot </th>
-                                            <th>Print </th>
+                                           
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -71,16 +71,16 @@
                                                         data-bs-target="#myModal"><i class="bx bx-edit-alt" title="Input Lot"></i> Input Lot</button>
                                                         <!-- Include modal content -->
                                                 </td>
-                                                <td>
+                                                <!-- <td> -->
                                                  @if($data->lot_number!='')   
                                                
-                                                <a href="/generateBarcode/{{ $data->lot_number }}" class="btn btn-sm btn-info"><i class=" bx bx-barcode" >Print Barcode</i></a>
+                                                <!-- <a href="/generateBarcode/{{ $data->lot_number }}" class="btn btn-sm btn-info"><i class=" bx bx-barcode" >Print Barcode</i></a> -->
                                                 @else
-                                                <button type="submit" class="btn btn-sm btn-danger" >
+                                                <!-- <button type="submit" class="btn btn-sm btn-danger" >
                                                     <i class="bx bx-info-circle" > Please Generate Barcode</i>
-                                                </button>
+                                                </button> -->
                                                 @endif
-                                                </td>
+                                                <!-- </td> -->
                                                     @include('grn.modal')
                                                 <td>
                                                     <a href="/good-lote-number-detail/{{ $data->id }}" class="btn btn-sm btn-primary waves-effect waves-light"><i class=" bx bx-show-alt" ></i></a>
