@@ -5,14 +5,23 @@
     </button>
     <ul class="dropdown-menu" aria-labelledby="btnGroupDrop">
         <li>
-            <button class="dropdown-item drpdwn-{{ $data->status == 'Request' ? 'scs' : 'wrn' }}"
+            <button
+                class="dropdown-item drpdwn-{{ $data->status == 'Request' || $data->status == 'Un Posted' ? 'scs' : 'wrn' }}"
                 data-wo-number="{{ $data->wo_number }}" data-status="{{ $data->status }}"
                 onclick="showModal(this);"><span
-                    class="mdi {{ $data->status == 'Request' ? 'mdi-check-bold' : 'mdi-arrow-left-top-bold' }}"></span>
+                    class="mdi {{ $data->status == 'Request' || $data->status == 'Un Posted' ? 'mdi-check-bold' : 'mdi-arrow-left-top-bold' }}"></span>
                 |
-                {{ $data->status == 'Request' ? 'Posted' : 'Un Posted' }}</button>
+                {{ $data->status == 'Request' || $data->status == 'Un Posted' ? 'Posted' : 'Un Posted' }}</button>
         </li>
-        @if ($data->status == 'Request')
+        @if ($data->id_master_process_productions == '2')
+            <li>
+                <button class="dropdown-item drpdwn-dgr" data-wo-number="{{ $data->wo_number }}"
+                    data-status="{{ $data->status }}" onclick="showModal(this, 'Delete');"><span
+                        class="mdi mdi mdi-view-list"></span>
+                    | WO Details</button>
+            </li>
+        @endif
+        @if ($data->status == 'Request' || $data->status == 'Un Posted')
             <li>
                 <button class="dropdown-item drpdwn-dgr" data-wo-number="{{ $data->wo_number }}"
                     data-status="{{ $data->status }}" onclick="showModal(this, 'Delete');"><span
@@ -27,8 +36,7 @@
             </li>
         @endif
         <li>
-            <a class="dropdown-item drpdwn"
-                href="{{ route('ppic.workOrder.view', encrypt($data->wo_number)) }}"><span
+            <a class="dropdown-item drpdwn" href="{{ route('ppic.workOrder.view', encrypt($data->wo_number)) }}"><span
                     class="mdi mdi-eye"></span> | View Data</a>
         </li>
     </ul>
