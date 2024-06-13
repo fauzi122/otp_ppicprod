@@ -20,11 +20,11 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <form action="{{ route('packing_list.store') }}" method="POST">
+                        <form action="{{ route('packing_list.store') }}" method="POST" id="packing-list-form">
                             @csrf
                             <div class="mb-3">
                                 <label for="packing_number" class="form-label">Packing Number</label>
-                                <input type="text" class="form-control" id="packing_number" name="packing_number" required>
+                                <input type="text" class="form-control" id="packing_number" name="packing_number" value="{{ $nextPackingNumber }}" readonly>
                             </div>
                             <div class="mb-3">
                                 <label for="date" class="form-label">Date</label>
@@ -33,6 +33,7 @@
                             <div class="mb-3">
                                 <label for="customer" class="form-label">Customer</label>
                                 <select class="form-control" id="customer" name="customer" required></select>
+                                <input type="hidden" id="customer_id" name="customer_id">
                             </div>
                             <div class="mb-3">
                                 <label for="all_barcodes" class="form-label">All Barcodes</label>
@@ -42,36 +43,40 @@
                                     <option value="N">N</option>
                                 </select>
                             </div>
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex flex-wrap align-items-center mb-4">
-                                        <h5 class="card-title me-2">Packing List Detail</h5>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <div class="mb-3" id="change_so_wrapper">
-                                                <label for="change_so" class="form-label">Change SO</label>
-                                                <input type="text" class="form-control" id="change_so" name="change_so">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="barcode" class="form-label">Barcode</label>
-                                                <input type="text" class="form-control" id="barcode" name="barcode" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="number_of_box" class="form-label">Number Of Box</label>
-                                                <input type="number" class="form-control" id="number_of_box" name="number_of_box">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="weight" class="form-label">Weight</label>
-                                                <input type="text" class="form-control" id="weight" name="weight">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <button type="submit" class="btn btn-primary" id="save-button">Simpan</button>
                             <a href="{{ route('packing-list') }}" class="btn btn-secondary">Kembali</a>
                         </form>
+                    </div>
+                </div>
+                <div class="card" id="packing-list-detail-card" style="display: none;">
+                    <div class="card-body">
+                        <h5 class="card-title">Packing List Detail</h5>
+                        <form id="packing-list-detail-form">
+                            <input type="hidden" id="packing_list_id" name="packing_list_id">
+                            <div class="mb-3" id="change_so_wrapper">
+                                <label for="change_so" class="form-label">Change SO</label>
+                                <input type="text" class="form-control" id="change_so" name="change_so">
+                            </div>
+                            <div class="mb-3">
+                                <label for="barcode" class="form-label">Barcode</label>
+                                <input type="text" class="form-control" id="barcode" name="barcode" required>
+                                <div id="barcode-error" class="text-danger" style="display: none;">Barcode tidak ditemukan</div>
+                            </div>
+                        </form>
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="barcode-table">
+                                <thead>
+                                    <tr>
+                                        <th>Change SO</th>
+                                        <th>Barcode</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Data barcode akan dimuat di sini -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -80,7 +85,13 @@
 </div>
 @endsection
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@endpush
+
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $('#customer').select2({
@@ -101,21 +112,109 @@
                 },
                 cache: true
             }
+        }).on('select2:select', function(e) {
+            var data = e.params.data;
+            $('#customer_id').val(data.id);
         });
 
-        // Menyembunyikan atau menampilkan input Change SO berdasarkan pilihan All Barcodes
-        $('#all_barcodes').on('change', function() {
-            if ($(this).val() === 'N') {
-                $('#change_so_wrapper').hide();
-                $('#barcode').focus();
-            } else if ($(this).val() === 'Y') {
+        $('#packing-list-form').on('submit', function(e) {
+            e.preventDefault();
+
+            var formData = $(this).serialize();
+            console.log("Form Data:", formData);
+
+            $.ajax({
+                url: $(this).attr('action'),
+                method: $(this).attr('method'),
+                data: formData,
+                success: function(response) {
+                    console.log("Response:", response);
+                    if (response.success) {
+                        $('#packing-list-detail-card').show();
+                        $('#packing-list-form').find('input, select').attr('disabled', true);
+                        $('#packing_list_id').val(response.packing_list_id);
+                        $('#save-button').hide(); // Menyembunyikan tombol simpan
+                        $('#barcode').focus(); // Memfokuskan pada input barcode
+                    } else {
+                        Swal.fire('Error', response.error || 'Gagal menyimpan data packing list', 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log("AJAX Error:", xhr.responseText);
+                    Swal.fire('Error', 'Gagal menyimpan data packing list', 'error');
+                }
+            });
+        });
+
+        $('#all_barcodes').change(function() {
+            if ($(this).val() === 'Y') {
                 $('#change_so_wrapper').show();
-                $('#change_so').focus();
+            } else {
+                $('#change_so_wrapper').hide();
+                $('#change_so').val('');
+            }
+        }).trigger('change'); // Trigger change event on page load to set the initial state
+
+        $('#barcode').on('input', function() {
+            if ($(this).val().length === 11) {
+                $.ajax({
+                    url: '{{ route("check-barcode") }}',
+                    method: 'POST',
+                    data: {
+                        barcode: $(this).val(),
+                        customer_id: $('#customer_id').val(),
+                        change_so: $('#change_so').val(),
+                        packing_list_id: $('#packing_list_id').val(),
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.exists) {
+                            var newRow = '<tr data-id="' + response.id + '">' +
+                                '<td>' + ($('#change_so').val() || '') + '</td>' +
+                                '<td>' + $('#barcode').val() + '</td>' +
+                                '<td><button type="button" class="btn btn-danger btn-sm remove-barcode">Remove</button></td>' +
+                                '</tr>';
+                            $('#barcode-table tbody').append(newRow);
+                            $('#barcode').val('');
+                            $('#change_so').val('');
+                            $('#barcode').focus();
+                        } else if (response.duplicate) {
+                            Swal.fire('Error', 'Barcode sudah terdaftar di packing list', 'error');
+                        } else {
+                            $('#barcode-error').show();
+                            setTimeout(function() {
+                                $('#barcode-error').hide();
+                            }, 3000);
+                        }
+                    }
+                });
             }
         });
 
-        // Panggil event change saat pertama kali halaman dimuat
-        $('#all_barcodes').trigger('change');
+        $(document).on('click', '.remove-barcode', function() {
+            var row = $(this).closest('tr');
+            var id = row.data('id');
+
+            $.ajax({
+                url: '{{ route("remove-barcode") }}',
+                method: 'POST',
+                data: {
+                    id: id,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        row.remove();
+                    } else {
+                        Swal.fire('Error', 'Gagal menghapus barcode', 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log("AJAX Error:", xhr.responseText);
+                    Swal.fire('Error', 'Gagal menghapus barcode', 'error');
+                }
+            });
+        });
     });
 </script>
 @endpush
