@@ -64,7 +64,6 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        var i = 1;
         let dataTable = $('#packing_list_table').DataTable({
             dom: '<"top d-flex"<"position-absolute top-0 end-0 d-flex"fl>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>><"clear:both">',
             initComplete: function(settings, json) {
@@ -79,7 +78,7 @@
                 search: "",
                 searchPlaceholder: "Search",
             },
-            pageLength: 5,
+            pageLength: 10,
             lengthMenu: [
                 [5, 10, 20, 25, 50, 100],
                 [5, 10, 20, 25, 50, 100]
@@ -125,7 +124,10 @@
                     data: 'action',
                     name: 'action',
                     orderable: false,
-                    searchable: false
+                    searchable: false,
+                    render: function(data, type, row, meta) {
+                        return generateActionButtons(row);
+                    }
                 },
             ],
             createdRow: function(row, data, dataIndex) {
@@ -148,6 +150,52 @@
                 }
             ],
         });
+
+        function generateActionButtons(data) {
+            let buttons = `<div class="btn-group" role="group" aria-label="Action Buttons">
+                <a href="/packing-list/${data.id}" class="btn btn-sm btn-primary waves-effect waves-light">
+                    <i class="bx bx-show-alt"></i>
+                </a>`;
+
+            if (data.status == 'Request') {
+                buttons += `<form action="/packing-list/${data.id}/post" method="post" class="d-inline" data-id="">
+                    @method('PUT')
+                    @csrf
+                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Anda yakin mau Post item ini ?')">
+                        <i class="bx bx-check-circle" title="Posted"> Posted</i>
+                    </button>
+                </form>`;
+            } else if (data.status == 'Posted') {
+                buttons += `<form action="/packing-list/${data.id}/unpost" method="post" class="d-inline" data-id="">
+                    @method('PUT')
+                    @csrf
+                    <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('Anda yakin mau Un Post item ini ?')">
+                        <i class="bx bx-undo" title="Un Posted"> Un Posted</i>
+                    </button>
+                </form>`;
+            }
+
+            buttons += `<a href="/print/${data.id}" class="btn btn-sm btn-secondary">
+                <i class="bx bx-printer"></i> Print
+            </a>`;
+
+            if (data.status == 'Request') {
+                buttons += `<a href="/packing-list/${data.id}/edit" class="btn btn-sm btn-warning">
+                    <i class="bx bx-edit"></i> Edit
+                </a>
+                <form action="/packing-list/${data.id}" method="post" class="d-inline" data-id="">
+                    @method('DELETE')
+                    @csrf
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Anda yakin mau menghapus item ini ?')">
+                        <i class="bx bx-trash"></i> Delete
+                    </button>
+                </form>`;
+            }
+
+            buttons += `</div>`;
+
+            return buttons;
+        }
     });
 </script>
 @endpush
