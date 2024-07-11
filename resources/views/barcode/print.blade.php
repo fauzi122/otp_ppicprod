@@ -77,7 +77,7 @@
         <td class="colon">:</td>
         <td class="value">
             <img class="barcode-img" src="data:image/png;base64,{{ DNS1D::getBarcodePNG($barcode->barcode_number, 'C128') }}" alt="barcode" />
-            <dev class="barcode-number">{{ $barcode->barcode_number }}{{ $barcode->type_product_code }}{{ $barcode->group_sub_code }}</dev>
+            <dev class="barcode-number">{{ $barcode->barcode_number }}</dev>
         </td>
     </tr>
 </table>
