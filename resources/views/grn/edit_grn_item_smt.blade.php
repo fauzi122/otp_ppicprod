@@ -131,6 +131,16 @@
                                             <textarea name="note" rows="4" cols="50" class="form-control">{{ $goodReceiptNote->note }}</textarea>
                                         </div>
                                     </div>
+                                    <div class="row mb-4 field-wrapper required-field">
+                                        <label for="horizontal-firstname-input" class="col-sm-3 col-form-label">Status</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-select data-select2" name="status" id="status">
+                                                <option>Pilih Status</option>
+                                                <option value="Open" {{ $goodReceiptNote->status == 'Open' ? 'selected' : '' }}>Open</option>
+                                                <option value="Close" {{ $goodReceiptNote->status == 'Close' ? 'selected' : '' }}>Close</option>
+                                            </select>
+                                        </div>
+                                    </div>
 
                                     <div class="row justify-content-end">
                                         <div class="col-sm-9">
