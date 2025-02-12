@@ -9,6 +9,7 @@ class DetailGoodReceiptNoteDetail extends Model
 {
     use HasFactory;
     protected $table = 'detail_good_receipt_note_details';
+    public $timestamps = false;
     protected $guarded=[
         'id'
     ];
