@@ -14,7 +14,7 @@
                             <h5 class="mb-0">List Good Receipt Note (GRN)</h5>
                             <div>
                                 <a href="{{ route('grn.add', 'PR') }}" class="btn btn-sm btn-primary waves-effect btn-label waves-light" title="Tambah GRN dari PR">
-                                    <i class="mdi mdi-plus label-icon"></i> Tambah GRN dari <b>(PR With Price)</b>
+                                    <i class="mdi mdi-plus label-icon"></i> Tambah GRN dari <b>(PR)</b>
                                 </a>
                                 <a href="{{ route('grn.add', 'PO') }}" class="btn btn-sm btn-success waves-effect btn-label waves-light" title="Tambah GRN dari PO">
                                     <i class="mdi mdi-plus label-icon"></i> Tambah GRN dari <b>(PO)</b>
@@ -173,9 +173,17 @@
                     bgColor = 'table-success';
                     darkColor = '#CFEBE0';
                 }
+                if (data.status === 'Closed') {
+                    bgColor = 'table-success-closed';
+                    darkColor = '#a6eed1';
+                }
                 if (data.status === 'Hold') {
                     bgColor = 'table-secondary';
                     darkColor = '#DFE0E3';
+                }
+                if (data.status === 'Un Posted') {
+                    bgColor = 'table-warning';
+                    darkColor = '#FFF3CB';
                 }
                 if (bgColor) {
                     $(row).addClass(bgColor);
@@ -253,8 +261,9 @@
                 <select id="filterStatus">
                     <option value="All">-- Semua Status --</option>
                     <option value="Hold">Hold</option>
-                    <option value="Posted">Posted</option>
                     <option value="Un Posted">Un Posted</option>
+                    <option value="Posted">Posted</option>
+                    <option value="Closed">Closed</option>
                 </select>
             </label>
         `;
