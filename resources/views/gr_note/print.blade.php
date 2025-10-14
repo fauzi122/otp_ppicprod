@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    @if(($data->status != 'Posted') && ($data->status != 'Closed'))
+    @if(in_array($data->status, ['Hold', 'Un Posted']))
         <div class="watermark">DRAFT</div>
     @endif
     
@@ -31,11 +31,11 @@
         </div>
 
         <div class="row text-center">
-            <h1 style="margin-top: 3rem;">GOOD RECEIPT NOTE</h4>
+            <h2 style="margin-top: 3rem;"><b>GOOD RECEIPT NOTE</b></h2>
             <h4>No. {{ $data->receipt_number }}</h4>
         </div>
 
-        <table class="mb-3">
+        <table class="mb-3" style="font-size: 1rem;">
             <tbody>
                 <tr>
                     <td class="align-top">Receipt Date</td>
@@ -62,33 +62,33 @@
         
         <div class="row">
             <div class="table-responsive">
-                <table class="table table-bordered table-sm mb-10">
+                <table class="table table-bordered table-sm mb-10" style="font-size: 1rem;">
                     <thead class="table-light">
                         <tr>
-                            <td class="align-top text-center">#</td>
-                            <td class="align-top">Item Code</td>
-                            <td class="align-top">Description</td>
-                            <td class="align-top">Qty</td>
-                            <td class="align-top">Unit</td>
+                            <td class="align-top fw-bold text-center p-2">#</td>
+                            <td class="align-top fw-bold p-2">Item Code</td>
+                            <td class="align-top fw-bold p-2">Description</td>
+                            <td class="align-top fw-bold p-2">Qty</td>
+                            <td class="align-top fw-bold p-2">Unit</td>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($itemDatas as $item)
                             <tr>
-                                <td class="align-top text-center">{{ $loop->iteration }}</td>
-                                <td>{{ $item->code }}</td>
-                                <td>
+                                <td class="align-top text-center p-2">{{ $loop->iteration }}</td>
+                                <td class="p-2">{{ $item->code }}</td>
+                                <td class="p-2">
                                     {{ $item->product_desc }} @if($item->type_product == 'FG') || {{ $item->perforasi }} @endif <br>
                                     {{ $item->remarks }}
                                 </td>
-                                <td>
+                                <td class="p-2">
                                     {{ $item->receipt_qty 
                                         ? (strpos(strval($item->receipt_qty), '.') !== false 
                                             ? rtrim(rtrim(number_format($item->receipt_qty, 3, ',', '.'), '0'), ',') 
                                             : number_format($item->receipt_qty, 0, ',', '.')) 
                                         : '0' }}
                                 </td>
-                                <td>{{ $item->unit_code }}</td>
+                                <td class="p-2">{{ $item->unit_code }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -96,20 +96,22 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" style="font-size: 1rem;">
             <ul style="list-style-type: '- ';">
                 Note : {{ $data->remarks; }}
             </ul>
         </div>
         <hr>
-        <div class="row">
+        <div class="row" style="font-size: 1rem;">
             <div class="col-4 text-center">
                 <p class="mb-5">Diterima Oleh,</p>
+                <br><br>
                 <p>(.............)</p>
             </div>
             <div class="col-4 text-center"></div>
             <div class="col-4 text-center">
                 <p class="mb-5">Diperiksa Oleh</p>
+                <br><br>
                 <p>(.............)</p>
             </div>
         </div>
